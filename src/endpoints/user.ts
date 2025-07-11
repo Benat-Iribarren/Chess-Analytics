@@ -42,7 +42,7 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
         });
         
         // Devolver la respuesta de la API de Lichess
-        return lichessResponse.data;
+        return reply.status(200).send(lichessResponse.data);
       } catch (error) {
         fastify.log.error(error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {

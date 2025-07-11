@@ -7,7 +7,7 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
         const lichessResponse = await axios.get('https://lichess.org/api/player', {
           headers: { 'Accept': 'application/json' }
         });
-        return lichessResponse.data;
+        return reply.status(200).send(lichessResponse.data);
       } catch (error) {
         fastify.log.error(error);
         reply.status(500).send({ error: 'Internal server error.' });
