@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
-import { usersSchema } from "../utils/schemas";
+import { userSchema } from "../utils/schemas";
 
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.get<{ Querystring: { id: string } }>('/chess/user', 
         {
             schema: {
-              response: usersSchema
+              response: userSchema
             }
           },
         async (request, reply) => {

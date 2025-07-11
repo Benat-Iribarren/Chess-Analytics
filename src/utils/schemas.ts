@@ -1,4 +1,12 @@
-export const usersSchema = {
+const errorSchema = {
+    type: 'object',
+    properties: {
+      error: { type: 'string' }
+    },
+    required: ['error']
+  };
+  
+export const userSchema = {
     200: {
         type: 'object',
         properties: {
@@ -14,7 +22,10 @@ export const usersSchema = {
           playTime: { type: 'object', additionalProperties: true }
         },
         required: ['id', 'username', 'playTime']
-    }
+    },
+    400: errorSchema,
+    404: errorSchema,
+    500: errorSchema
 }
 export const enrichedSchema = {
     200: {
@@ -27,7 +38,10 @@ export const enrichedSchema = {
             rank: { type:'number', nullable: true },
             resultStreak: { type: 'object', additionalProperties: true }
         }
-    }
+    },
+    400: errorSchema,
+    404: errorSchema,
+    500: errorSchema
 }
 export const topPlayerHistorySchema = {
     200: {
@@ -47,5 +61,8 @@ export const topPlayerHistorySchema = {
           }
         },
         required: ['username', 'history']
-      }
+      },
+      400: errorSchema,
+      404: errorSchema,
+      500: errorSchema
 }
