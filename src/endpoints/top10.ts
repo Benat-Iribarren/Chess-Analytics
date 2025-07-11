@@ -1,8 +1,14 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
+import { top10Schema } from "../utils/schemas";
 
 async function top10Route(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.get('/chess/top10',
+      {
+        schema: {
+          response: top10Schema
+        }
+      },
       async (request, reply) => {
       try {
         const lichessResponse = await axios.get('https://lichess.org/api/player', {
