@@ -27,24 +27,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
             headers: { 'Accept': 'application/json' }
         });
         const userPerformance = userPerformanceResponse.data;
-        const userResultStreak = {
-          wins: {
-            current: userPerformance.stat.resultStreak.win.cur.v,
-            max: userPerformance.stat.resultStreak.win.max.v,
-          },
-          losses: {
-            current: userPerformance.stat.resultStreak.loss.cur.v,
-            max: userPerformance.stat.resultStreak.loss.max.v,
-          }
-        }
-        const data = {
-          id: id,
-          username: username,
-          profile: userInfo.profile,
-          playTime: userInfo.playTime,
-          rank: userPerformance.rank != null ? userPerformance.rank : null,
-          resultStreak: userResultStreak
-        }
+        const data = prepareDataObject(id, username, userInfo, userPerformance);
         return reply.status(200).send(data);
       } catch (error) {
         fastify.log.error(error);
@@ -55,5 +38,27 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
       }
     });
   }
-  
+
+  function prepareDataObject(id: string, username: string, userInfo: any, userPerformance: any) {
+    const userResultStreak = {
+      wins: {
+        current: userPerformance.stat.resultStreak.win.cur.v,
+        max: userPerformance.stat.resultStreak.win.max.v,
+      },
+      losses: {
+        current: userPerformance.stat.resultStreak.loss.cur.v,
+        max: userPerformance.stat.resultStreak.loss.max.v,
+      }
+    } 
+    const data = {
+      id: id,
+      username: username,
+      profile: userInfo.profile,
+      playTime: userInfo.playTime,
+      rank: userPerformance.rank != null ? userPerformance.rank : null,
+      resultStreak: userResultStreak
+    }
+    return data;
+  }
+      
   export default enrichedRoute;
