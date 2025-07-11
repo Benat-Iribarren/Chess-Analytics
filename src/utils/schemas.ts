@@ -5,7 +5,7 @@ const errorSchema = {
     },
     required: ['error']
   };
-  
+
   export const top10Schema = {
     200: {
       type: 'object',
@@ -36,40 +36,106 @@ const errorSchema = {
       }
     },
     500: errorSchema
-  };
+};
+
 export const userSchema = {
-    200: {
+  200: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      username: { type: 'string' },
+      playTime: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
-          username: { type: 'string' },
-          modes: { type: 'object', additionalProperties: true },
-          flair: { type: 'string' },
-          patron: { type: 'boolean' },
-          verified: { type: 'boolean' },
-          createdAt: { type: 'number' },
-          profile: { type: 'object', additionalProperties: true },
-          seenAt: { type: 'number' },
-          playTime: { type: 'object', additionalProperties: true }
+          total: { type: 'number' },
+          tv: { type: 'number' }
         },
-        required: ['id', 'username', 'playTime']
+        required: ['total', 'tv']
+      },
+      modes: {
+        type: 'object',
+        additionalProperties: {
+          type: 'object',
+          properties: {
+            games: { type: 'number', nullable: true },
+            runs: { type: 'number', nullable: true },
+            score: { type: 'number', nullable: true },
+            rating: { type: 'number', nullable: true },
+            rd: { type: 'number', nullable: true },
+            prog: { type: 'number', nullable: true },
+            prov: { type: 'boolean', nullable: true }
+          }
+        }
+      },
+      flair: { type: 'string' },
+      patron: { type: 'boolean' },
+      verified: { type: 'boolean' },
+      createdAt: { type: 'number' },
+      profile: {
+        type: 'object',
+        properties: {
+          bio: { type: 'string', nullable: true },
+          realName: { type: 'string', nullable: true },
+          links: { type: 'string', nullable: true }
+        },
+        required: []
+      },
+      seenAt: { type: 'number' }
     },
-    400: errorSchema,
-    404: errorSchema,
-    500: errorSchema
-}
+    required: ['id', 'username', 'playTime']
+  },
+  400: errorSchema,
+  404: errorSchema,
+  500: errorSchema
+};
+
 export const enrichedSchema = {
     200: {
         type: 'object',
         properties: {
             id: { type: 'string' },
             username: { type: 'string' },
-            profile: { type: 'object', additionalProperties: true },
-            playTime: { type: 'object', additionalProperties: true },
-            rank: { type:'number', nullable: true },
-            resultStreak: { type: 'object', additionalProperties: true }
-        }
-    },
+            profile: {
+              type: 'object',
+              properties: {
+                bio: { type: 'string', nullable: true },
+                realName: { type: 'string', nullable: true },
+                links: { type: 'string', nullable: true }
+              },
+            },
+            playTime: {
+              type: 'object',
+              properties: {
+                total: { type: 'number' },
+                tv: { type: 'number' }
+              },
+              required: ['total', 'tv']
+            },
+            rank: { type: ['number', 'null'] },
+            resultStreak: {
+              type: 'object',
+              properties: {
+                wins: {
+                  type: 'object',
+                  properties: {
+                    current: { type: 'number' },
+                    max: { type: 'number' }
+                  },
+                  required: ['current', 'max']
+                },
+                losses: {
+                  type: 'object',
+                  properties: {
+                    current: { type: 'number' },
+                    max: { type: 'number' }
+                  },
+                  required: ['current', 'max']
+                }
+              },
+              required: ['wins', 'losses']
+            }
+          },
+        },
     400: errorSchema,
     404: errorSchema,
     500: errorSchema
