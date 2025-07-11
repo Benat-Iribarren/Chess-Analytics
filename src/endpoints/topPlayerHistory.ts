@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.get<{ Querystring: { id: string, perf: string } }>('/chess/topPlayerHistory',
+  fastify.get<{ Querystring: { mode: string, top: string } }>('/chess/topPlayerHistory',
     {
       schema: {
         response: {
@@ -32,11 +32,11 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
 
   const { mode } = request.query as { mode?: string };
   const { top } = request.query as { top?: string };
-  if (!mode || !top || parseInt(top) > 10) {
+  if (!mode || !top || parseInt(top) > 200) {
       return reply.status(400).send({ error: "Invalid or missing 'mode' or 'top' parameter." });
   }
   try {
-    const leaderboardInfoResponse = await axios.get(`https://lichess.org/api/player/top/10/${mode}`, {
+    const leaderboardInfoResponse = await axios.get(`https://lichess.org/api/player/top/${top}/${mode}`, {
         headers: { 'Accept': 'application/json' }
     });
     const leaderboardInfo = leaderboardInfoResponse.data;
@@ -53,7 +53,7 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
       date: item.slice(0, 3).map((x: any) => String(x).padStart(2, '0')).join('-'),
       rating: item[3]
     }));
-    
+
     const data = {
         username: username,
         history: parsedHistory
