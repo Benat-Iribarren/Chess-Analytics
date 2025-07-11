@@ -49,12 +49,5 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
     }
   });
 }
-type ratingForDate = {
-  date: string;
-  rating: number; 
-}
-type ratingHistory = {
-  ratingForDate: ratingForDate[];
-}
 
 export default topPlayerHistoryRoute;
