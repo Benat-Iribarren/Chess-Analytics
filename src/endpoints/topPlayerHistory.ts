@@ -1,31 +1,12 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
-
+import { topPlayerHistorySchema } from "../utils/schemas";
 
 async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{ Querystring: { mode: string, top: string } }>('/chess/topPlayerHistory',
-    {
-      schema: {
-        response: {
-        200: {
-          type: 'object',
-          properties: {
-            username: { type: 'string' },
-            history: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  date: { type: 'string' },
-                  rating: { type: 'number' }
-                },
-                required: ['date', 'rating']
-              }
-            }
-          },
-          required: ['username', 'history']
-        }
-      }
+  {
+    schema: {
+      response: topPlayerHistorySchema
     }
   },
   async (request, reply) => {

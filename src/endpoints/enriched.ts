@@ -1,26 +1,15 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
-
+import { enrichedSchema } from "../utils/schemas";
 
 async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.get<{ Querystring: { id: string, mode: string } }>('/chess/enriched',
-       {schema: {
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              username: { type: 'string' },
-              profile: { type: 'object', additionalProperties: true },
-              playTime: { type: 'object', additionalProperties: true },
-              rank: { type:'number', nullable: true },
-              resultStreak: { type: 'object', additionalProperties: true }
-            }
-          }
-        }
-       }
-       }
-      ,async (request, reply) => {
+    {
+      schema: {
+        response: enrichedSchema
+      }
+    },
+    async (request, reply) => {
 
     const { id } = request.query as { id?: string };
     const { mode } = request.query as { mode?: string };
