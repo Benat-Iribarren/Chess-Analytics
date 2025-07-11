@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-    fastify.get<{ Querystring: { id: string, perf: string } }>('/chess/enriched',
+    fastify.get<{ Querystring: { id: string, mode: string } }>('/chess/enriched',
        {schema: {
         response: {
           200: {
@@ -13,7 +13,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
               username: { type: 'string' },
               profile: { type: 'object', additionalProperties: true },
               playTime: { type: 'object', additionalProperties: true },
-              rank: { type: 'string' },
+              rank: { type:'number', nullable: true },
               resultStreak: { type: 'object', additionalProperties: true }
             }
           }
@@ -23,9 +23,9 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
       ,async (request, reply) => {
 
     const { id } = request.query as { id?: string };
-    const { perf } = request.query as { perf?: string };
-    if (!id || !perf) {
-        return reply.status(400).send({ error: "Invalid or missing 'id' or 'perf' parameter." });
+    const { mode } = request.query as { mode?: string };
+    if (!id || !mode) {
+        return reply.status(400).send({ error: "Invalid or missing 'id' or 'mode' parameter." });
     }
     try {
         // Petition for user name
@@ -36,7 +36,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
         const username = userInfo.username;
 
         // Petition for the performance stats of the user
-        const userPerformanceResponse = await axios.get(`https://lichess.org/api/user/${username}/perf/${perf}`, {
+        const userPerformanceResponse = await axios.get(`https://lichess.org/api/user/${username}/perf/${mode}`, {
             headers: { 'Accept': 'application/json' }
         });
         const userPerformance = userPerformanceResponse.data;
@@ -55,7 +55,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
           username: username,
           profile: userInfo.profile,
           playTime: userInfo.playTime,
-          rank: userPerformance.rank,
+          rank: userPerformance.rank != null ? userPerformance.rank : null,
           resultStreak: userResultStreak
         }
         return reply.status(200).send(data);

@@ -5,6 +5,7 @@ import swaggerUI from '@fastify/swagger-ui';
 import top10 from './endpoints/top10';
 import users from './endpoints/user';
 import enriched from './endpoints/enriched';
+import topPlayerHistory from './endpoints/topPlayerHistory';
 
 const fastify = Fastify({ logger: true });
 
@@ -28,9 +29,11 @@ fastify.register(swaggerUI, {
   },
   transformSpecificationClone: true
 });
+
 fastify.register(top10);
 fastify.register(users);
 fastify.register(enriched);
+fastify.register(topPlayerHistory);
 
 const PORT = 3000;
 

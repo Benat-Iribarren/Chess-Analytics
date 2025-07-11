@@ -1,9 +1,8 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 
-
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-    // Pasar el id como query param
+    // Pass the id as a query param
     fastify.get<{ Querystring: { id: string } }>('/chess/user', 
         {
             schema: {
@@ -13,7 +12,7 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
                   properties: {
                     id: { type: 'string' },
                     username: { type: 'string' },
-                    perfs: { type: 'object', additionalProperties: true },
+                    modes: { type: 'object', additionalProperties: true },
                     flair: { type: 'string' },
                     patron: { type: 'boolean' },
                     verified: { type: 'boolean' },
@@ -22,27 +21,28 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
                     seenAt: { type: 'number' },
                     playTime: { type: 'object', additionalProperties: true }
                   },
-                  required: ['id', 'username', 'perfs', 'createdAt']
+                  required: ['id', 'username', 'playTime']
                 }
               }
             }
           },
         async (request, reply) => {
         
-    // Leer el id del usuario desde la query
+    // Read the user id from the query
     const { id } = request.query as { id?: string };
 
     if (!id) {
         return reply.status(400).send({ error: "Invalid or missing 'id' parameter." });
     }
     try {
-        // Hacer la petición a la API de Lichess
+        // Petition to Lichess API
         const lichessResponse = await axios.get(`https://lichess.org/api/user/${id}`, {
             headers: { 'Accept': 'application/json' }
         });
         
-        // Devolver la respuesta de la API de Lichess
-        return reply.status(200).send(lichessResponse.data);
+        const { perfs, ...rest } = lichessResponse.data;
+        const data = { ...rest, modes: perfs };
+        return reply.status(200).send(data);
       } catch (error) {
         fastify.log.error(error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {
