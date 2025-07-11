@@ -22,8 +22,8 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
         });
         
         const { perfs, ...rest } = lichessResponse.data;
-        const data = { ...rest, modes: perfs };
-        return reply.status(200).send(data);
+        const userDataResponse = { ...rest, modes: perfs };
+        return reply.status(200).send(userDataResponse);
       } catch (error) {
         fastify.log.error(error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {

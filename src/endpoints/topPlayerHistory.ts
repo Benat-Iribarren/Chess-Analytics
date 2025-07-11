@@ -35,11 +35,11 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
       rating: item[3]
     }));
 
-    const data = {
+    const topPlayerHistoryDataResponse = {
         username: username,
         history: parsedHistory
       }
-      return reply.status(200).send(data);
+      return reply.status(200).send(topPlayerHistoryDataResponse);
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {

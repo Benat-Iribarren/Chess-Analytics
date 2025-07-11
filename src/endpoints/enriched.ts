@@ -27,8 +27,9 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
             headers: { 'Accept': 'application/json' }
         });
         const userPerformance = userPerformanceResponse.data;
-        const data = prepareDataObject(id, username, userInfo, userPerformance);
-        return reply.status(200).send(data);
+
+        const enrichedDataResponse = prepareDataObject(id, username, userInfo, userPerformance);
+        return reply.status(200).send(enrichedDataResponse);
       } catch (error) {
         fastify.log.error(error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -50,7 +51,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
         max: userPerformance.stat.resultStreak.loss.max.v,
       }
     } 
-    const data = {
+    const enrichedDataResponse = {
       id: id,
       username: username,
       profile: userInfo.profile,
@@ -58,7 +59,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
       rank: userPerformance.rank != null ? userPerformance.rank : null,
       resultStreak: userResultStreak
     }
-    return data;
+    return enrichedDataResponse;
   }
       
   export default enrichedRoute;
