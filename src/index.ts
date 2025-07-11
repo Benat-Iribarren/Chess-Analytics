@@ -9,31 +9,10 @@ import topPlayerHistory from './endpoints/topPlayerHistory';
 
 const fastify = Fastify({ logger: true });
 
-fastify.register(swagger, {
-  swagger: {
-    info: {
-      title: 'Chess-Analytics',
-      version: '1.0.0',
-    },
-  },
-});
-fastify.register(swaggerUI, {
-  routePrefix: '/docs',
-  uiConfig: {
-    docExpansion: 'full',
-    deepLinking: false
-  },
-  staticCSP: true,
-  transformSpecification: (swaggerObject, request, reply) => {
-    return swaggerObject;
-  },
-  transformSpecificationClone: true
-});
 
-fastify.register(top10);
-fastify.register(users);
-fastify.register(enriched);
-fastify.register(topPlayerHistory);
+registerSwagger();
+registerSwaggerUI();
+registerRoutes();
 
 const PORT = 3000;
 
@@ -48,3 +27,36 @@ const start = async () => {
 };
 
 start();
+
+function registerSwagger(){
+  fastify.register(swagger, {
+    swagger: {
+      info: {
+        title: 'Chess-Analytics',
+        version: '1.0.0',
+      },
+    },
+  });
+}
+
+function registerSwaggerUI(){
+  fastify.register(swaggerUI, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'full',
+      deepLinking: false
+    },
+    staticCSP: true,
+    transformSpecification: (swaggerObject, request, reply) => {
+      return swaggerObject;
+    },
+    transformSpecificationClone: true
+  });
+}
+
+function registerRoutes(){
+  fastify.register(top10);
+  fastify.register(users);
+  fastify.register(enriched);
+  fastify.register(topPlayerHistory);
+}
