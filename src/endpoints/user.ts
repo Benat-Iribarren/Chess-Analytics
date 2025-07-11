@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-    // Pass the id as a query param
     fastify.get<{ Querystring: { id: string } }>('/chess/user', 
         {
             schema: {
@@ -28,14 +27,12 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
           },
         async (request, reply) => {
         
-    // Read the user id from the query
     const { id } = request.query as { id?: string };
 
     if (!id) {
         return reply.status(400).send({ error: "Invalid or missing 'id' parameter." });
     }
     try {
-        // Petition to Lichess API
         const lichessResponse = await axios.get(`https://lichess.org/api/user/${id}`, {
             headers: { 'Accept': 'application/json' }
         });

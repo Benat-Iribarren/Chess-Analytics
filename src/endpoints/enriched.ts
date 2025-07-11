@@ -28,14 +28,12 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
         return reply.status(400).send({ error: "Invalid or missing 'id' or 'mode' parameter." });
     }
     try {
-        // Petition for user name
         const userInfoResponse = await axios.get(`https://lichess.org/api/user/${id}`, {
             headers: { 'Accept': 'application/json' }
         });
         const userInfo = userInfoResponse.data;
         const username = userInfo.username;
 
-        // Petition for the performance stats of the user
         const userPerformanceResponse = await axios.get(`https://lichess.org/api/user/${username}/perf/${mode}`, {
             headers: { 'Accept': 'application/json' }
         });
