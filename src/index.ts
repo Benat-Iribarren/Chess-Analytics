@@ -7,26 +7,28 @@ import users from './endpoints/user';
 import enriched from './endpoints/enriched';
 import topPlayerHistory from './endpoints/topPlayerHistory';
 
-const fastify = Fastify({ logger: true });
-
+const fastify = Fastify({ logger: process.env.NODE_ENV !== 'test' });
 
 registerSwagger();
 registerSwaggerUI();
 registerRoutes();
 
-const PORT = 3000;
+export default fastify;
 
-const start = async () => {
-  try {
-    await fastify.listen({ port: PORT, host: '0.0.0.0' });
-    console.log(`Server is running on http://localhost:${PORT}`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
+if (require.main === module) {
+  const PORT = 3000;
 
-start();
+  const start = async () => {
+    try {
+      await fastify.listen({ port: PORT, host: '0.0.0.0' });
+      console.log(`Server is running on http://localhost:${PORT}`);
+    } catch (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+  };
+  start();
+}
 
 function registerSwagger(){
   fastify.register(swagger, {

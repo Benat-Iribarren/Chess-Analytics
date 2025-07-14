@@ -35,10 +35,9 @@ function renamePerfsNameToModes(data: any) {
     if (Array.isArray(data[mode])) {
       res[mode] = data[mode].map(player => {
         const { perfs, ...rest } = player;
-        return {
-          ...rest,
-          modes: perfs
-        };
+        return perfs !== undefined
+          ? { ...rest, modes: perfs }
+          : { ...rest }; 
       });
     } else {
       res[mode] = data[mode];

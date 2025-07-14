@@ -62,7 +62,7 @@ function parseDateValuesToString(dateArray: any[]): string {
 }
 
 function areValidParameters(mode: string | undefined, top: string | undefined) {
-  return mode && top && parseInt(top) <= 200;
+  return mode && top && parseInt(top) <= 200 && parseInt(top) > 0;
 }
 
 function getInputParameters(request: any) {
