@@ -13,6 +13,7 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
     try {
       const leaderboardResponseData = await getLeaderboardResponseData();
       const top10DataRenamed = renamePerfsNameToModes(leaderboardResponseData);
+      
       return reply.status(200).send(top10DataRenamed);
     } catch (error) {
       fastify.log.error(error);

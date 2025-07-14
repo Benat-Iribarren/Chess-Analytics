@@ -25,6 +25,7 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
       const parsedHistory = parseHistoryDataToObject(history);
 
       const playerHistoryData = buildPlayerHistoryData(username, parsedHistory)
+      
       return reply.status(200).send(playerHistoryData);
     } catch (error) {
       fastify.log.error(error);

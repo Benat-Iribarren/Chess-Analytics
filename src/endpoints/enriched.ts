@@ -21,6 +21,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
 
       const userPerformanceResponseData = await getUserPerformanceResponseData(username, mode);
       const userEnrichedData = buildUserEnrichedData(id, username, userResponseData, userPerformanceResponseData);
+      
       return reply.status(200).send(userEnrichedData);
     } catch (error) {
       fastify.log.error(error);

@@ -17,9 +17,10 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
     }
     try {
       const lichessResponseData = await getUserResponseData(id);
-        const { perfs, ...rest } = lichessResponseData;
-        const userDataResponseRenamed = { ...rest, modes: perfs };
-      return reply.status(200).send(userDataResponseRenamed);
+      const { perfs, ...rest } = lichessResponseData;
+      const userDataRenamed = { ...rest, modes: perfs };
+
+      return reply.status(200).send(userDataRenamed);
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {
