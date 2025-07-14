@@ -25,8 +25,7 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-        reply.status(404).send({ error: 'User not found.' });
-        return;
+        return reply.status(404).send({ error: 'User not found.' });
       }
 
       reply.status(500).send({ error: 'Internal server error.' });
