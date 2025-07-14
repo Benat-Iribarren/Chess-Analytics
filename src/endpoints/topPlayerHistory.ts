@@ -13,7 +13,8 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
 
     const { mode, top } = getInputParameters(request);
     if (!areValidParameters(mode, top)) {
-      return reply.status(400).send({ error: "Invalid or missing 'mode' or 'top' parameter." });
+      reply.status(400).send({ error: "Invalid or missing 'mode' or 'top' parameter." });
+      return;
     }
     try {
       const leaderboardInfoData = await getLeaderboardInfoResponseData(top, mode);
@@ -25,14 +26,16 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
       const parsedHistory = parseHistoryDataToObject(history);
 
       const playerHistoryData = buildPlayerHistoryData(username, parsedHistory)
-      
-      return reply.status(200).send(playerHistoryData);
+
+      reply.status(200).send(playerHistoryData);
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return reply.status(404).send({ error: 'Game Mode not found.' });
+        reply.status(404).send({ error: 'Game Mode not found.' });
+        return;
       }
-      return reply.status(500).send({ error: 'Internal server error.' });
+      
+      reply.status(500).send({ error: 'Internal server error.' });
     }
   });
 }

@@ -13,7 +13,8 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
   async (request, reply) => {
     const { id, mode } = getInputParameters(request);
     if (!areValidParameters(id, mode)) {
-        return reply.status(400).send({ error: "Invalid or missing 'id' or 'mode' parameter." });
+        reply.status(400).send({ error: "Invalid or missing 'id' or 'mode' parameter." });
+        return;
     }
     try {
       const userResponseData = await getUserResponseData(id);
@@ -22,13 +23,15 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
       const userPerformanceResponseData = await getUserPerformanceResponseData(username, mode);
       const userEnrichedData = buildUserEnrichedData(id, username, userResponseData, userPerformanceResponseData);
       
-      return reply.status(200).send(userEnrichedData);
+      reply.status(200).send(userEnrichedData);
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-          return reply.status(404).send({ error: 'User or Game Mode not found.' });
-        }
-      return reply.status(500).send({ error: 'Internal server error.' });
+        reply.status(404).send({ error: 'User or Game Mode not found.' });
+        return;
+      }
+
+      reply.status(500).send({ error: 'Internal server error.' });
     }
   });
 }

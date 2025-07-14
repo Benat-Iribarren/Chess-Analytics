@@ -13,20 +13,23 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
   async (request, reply) => {
     const { id } = getInputParameters(request);
     if (!areValidParameters(id)) {
-      return reply.status(400).send({ error: "Invalid or missing 'id' parameter." });
+      reply.status(400).send({ error: "Invalid or missing 'id' parameter." });
+      return;
     }
     try {
       const lichessResponseData = await getUserResponseData(id);
       const { perfs, ...rest } = lichessResponseData;
       const userDataRenamed = { ...rest, modes: perfs };
 
-      return reply.status(200).send(userDataRenamed);
+      reply.status(200).send(userDataRenamed);
     } catch (error) {
       fastify.log.error(error);
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return reply.status(404).send({ error: 'User not found.' });
+        reply.status(404).send({ error: 'User not found.' });
+        return;
       }
-      return reply.status(500).send({ error: 'Internal server error.' });
+
+      reply.status(500).send({ error: 'Internal server error.' });
     }
   });
 }
