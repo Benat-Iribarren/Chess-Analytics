@@ -1,33 +1,62 @@
 import app from '../../../src/index';
 import supertest from 'supertest';
-
+import nock from 'nock';
+import mockLichessData from '../../mocks/top10.json'; 
 
 describe('Top10 E2E tests', () => { 
   let request: any;
+  const lichessApiScope = nock('https://lichess.org');
 
   beforeAll(async () => {
     await app.ready();
     request = supertest(app.server as any);
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterEach(() => {
+    nock.cleanAll();
   });
 
-  it('Returns 200 and at least one mode in real response', async () => {
-    const mode = 'blitz';
+  afterAll(async () => {
+    await app.close();
+    nock.restore();
+  });
+
+  it('should return 200 with a structured list of top players', async () => {
+    lichessApiScope.get('/api/player').reply(200, mockLichessData);
     const response = await request.get('/chess/top10');
+
     expect(response.statusCode).toBe(200);
-    expect(typeof response.body).toBe('object');
-    expect(response.body).not.toBeNull();
-    expect(
-      ['blitz', 'bullet', 'rapid', 'classical', 'ultraBullet', 'crazyhouse', 'chess960', 'kingOfTheHill', 'threeCheck', 'antichess', 'atomic', 'horde', 'racingKings']
-        .some((mode) => Array.isArray(response.body[mode]))
-    ).toBe(true);
-    const firstModePlayer = response.body[mode][0];
-    expect(typeof firstModePlayer.id).toBe('string');
-    expect(typeof firstModePlayer.username).toBe('string');
-    expect(typeof firstModePlayer.modes[mode].rating).toBe('number');
-    expect(typeof firstModePlayer.modes[mode].progress).toBe('number');
+    
+    const body = response.body;
+    expect(body).toHaveProperty('bullet');
+
+    const firstBulletPlayer = body.bullet[0];
+    expect(firstBulletPlayer.id).toBe('ediz_gurel');
+    expect(firstBulletPlayer).not.toHaveProperty('perfs');
+    expect(firstBulletPlayer).toHaveProperty('modes');
+    expect(firstBulletPlayer.modes.bullet.rating).toBe(3371);
+
+    const secondBlitzPlayer = body.blitz[1];
+    expect(secondBlitzPlayer.id).toBe('iammatecheckmate');
+    expect(secondBlitzPlayer.modes.blitz.rating).toBe(3031);
+
+    const thirdBulletPlayer = body.bullet[2];
+    expect(thirdBulletPlayer.id).toBe('heisenberg01');
+    expect(thirdBulletPlayer.modes.bullet.rating).toBe(3235);
+    expect(thirdBulletPlayer.modes.bullet.progress).toBe(26);
+    expect(thirdBulletPlayer.title).toBe('FM');
+
+
+    expect(nock.isDone()).toBe(true); 
+  });
+
+  it('should return 500 if the external API fails', async () => {
+    lichessApiScope.get('/api/player').reply(500, { error: 'Server Error' });
+
+    const response = await request.get('/chess/top10');
+    
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(nock.isDone()).toBe(true);
   });
 });
