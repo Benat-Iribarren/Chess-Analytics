@@ -1,9 +1,7 @@
-// ¡Mock primero!
 jest.mock('axios');
 
 import axios, { AxiosError } from 'axios';
 import app from '../../../src/index';
-
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('User integration tests', () => {
@@ -80,5 +78,5 @@ describe('User integration tests', () => {
     expect(response.json()).toEqual({ error: "User not found." });
   });
 
-  
+
 });
