@@ -18,7 +18,7 @@ describe('Enriched integration tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Returns data if axios succeeds', async () => {
+  it('Returns enriched data if both axios calls succeed', async () => {
     const mockUserData = {
       id: 'thibault',
       username: 'thibault',
