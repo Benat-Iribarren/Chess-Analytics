@@ -51,7 +51,9 @@ describe('Top10 E2E tests', () => {
     lichessApiScope.get(`/api/user/${userId}/perf/${mode}`).reply(200, mockLichessEnrichedData);
     
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
-    
+    +
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal server error.' });
   });
 
   it('Returns 500 if the external Lichess API fails at second request', async () => {
