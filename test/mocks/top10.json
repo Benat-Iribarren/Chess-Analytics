@@ -1,0 +1,223 @@
+{
+    "bullet": [
+        {
+            "id": "ediz_gurel",
+            "username": "Ediz_Gurel",
+            "perfs": {
+                "bullet": {
+                    "rating": 3371,
+                    "progress": 21
+                }
+            },
+            "title": "GM",
+            "patron": true
+        },
+        {
+            "id": "chess-art-us",
+            "username": "chess-art-us",
+            "perfs": {
+                "bullet": {
+                    "rating": 3266,
+                    "progress": 14
+                }
+            },
+            "title": "IM"
+        },
+        {
+            "id": "heisenberg01",
+            "username": "Heisenberg01",
+            "perfs": {
+                "bullet": {
+                    "rating": 3235,
+                    "progress": 26
+                }
+            },
+            "title": "FM"
+        },
+        {
+            "id": "muisback",
+            "username": "muisback",
+            "perfs": {
+                "bullet": {
+                    "rating": 3229,
+                    "progress": -3
+                }
+            },
+            "title": "GM",
+            "patron": true
+        },
+        {
+            "id": "jaggust01",
+            "username": "Jaggust01",
+            "perfs": {
+                "bullet": {
+                    "rating": 3216,
+                    "progress": 6
+                }
+            },
+            "title": "IM",
+            "online": true
+        },
+        {
+            "id": "kelfero",
+            "username": "KelFero",
+            "perfs": {
+                "bullet": {
+                    "rating": 3204,
+                    "progress": 19
+                }
+            },
+            "patron": true
+        },
+        {
+            "id": "jessica_rabbitt",
+            "username": "Jessica_Rabbitt",
+            "perfs": {
+                "bullet": {
+                    "rating": 3202,
+                    "progress": -41
+                }
+            }
+        },
+        {
+            "id": "ekizzz",
+            "username": "ekizzz",
+            "perfs": {
+                "bullet": {
+                    "rating": 3201,
+                    "progress": 12
+                }
+            }
+        },
+        {
+            "id": "chessed70",
+            "username": "chessed70",
+            "perfs": {
+                "bullet": {
+                    "rating": 3183,
+                    "progress": 26
+                }
+            }
+        },
+        {
+            "id": "willzeitnot",
+            "username": "WillZeitnot",
+            "perfs": {
+                "bullet": {
+                    "rating": 3178,
+                    "progress": 8
+                }
+            },
+            "title": "NM"
+        }
+    ],
+    "blitz": [
+        {
+            "id": "athena-pallada",
+            "username": "athena-pallada",
+            "perfs": {
+                "blitz": {
+                    "rating": 3052,
+                    "progress": 18
+                }
+            },
+            "title": "GM"
+        },
+        {
+            "id": "iammatecheckmate",
+            "username": "IAmMateCheckMate",
+            "perfs": {
+                "blitz": {
+                    "rating": 3031,
+                    "progress": 8
+                }
+            }
+        },
+        {
+            "id": "dr_tiger",
+            "username": "Dr_Tiger",
+            "perfs": {
+                "blitz": {
+                    "rating": 3014,
+                    "progress": 2
+                }
+            },
+            "title": "GM",
+            "online": true
+        },
+        {
+            "id": "aspiringstar",
+            "username": "aspiringstar",
+            "perfs": {
+                "blitz": {
+                    "rating": 3011,
+                    "progress": 27
+                }
+            },
+            "title": "GM"
+        },
+        {
+            "id": "coffeechessclub2023",
+            "username": "coffeechessclub2023",
+            "perfs": {
+                "blitz": {
+                    "rating": 3009,
+                    "progress": 21
+                }
+            }
+        },
+        {
+            "id": "doughnut42",
+            "username": "doughnut42",
+            "perfs": {
+                "blitz": {
+                    "rating": 3003,
+                    "progress": -6
+                }
+            }
+        },
+        {
+            "id": "sportik_shark",
+            "username": "Sportik_Shark",
+            "perfs": {
+                "blitz": {
+                    "rating": 2993,
+                    "progress": 13
+                }
+            },
+            "title": "IM"
+        },
+        {
+            "id": "fran4477",
+            "username": "Fran4477",
+            "perfs": {
+                "blitz": {
+                    "rating": 2989,
+                    "progress": 11
+                }
+            }
+        },
+        {
+            "id": "yarebore",
+            "username": "Yarebore",
+            "perfs": {
+                "blitz": {
+                    "rating": 2988,
+                    "progress": 10
+                }
+            },
+            "title": "GM"
+        },
+        {
+            "id": "faustioro",
+            "username": "FaustiOro",
+                "perfs": {
+                "blitz": {
+                    "rating": 2960,
+                    "progress": 24
+                }
+            },
+            "title": "IM"
+        }
+    ]
+}

@@ -26,7 +26,10 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
       reply.status(200).send(userEnrichedData);
     } catch (error) {
       fastify.log.error(error);
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (
+        (axios.isAxiosError(error) && error.response?.status === 404) ||
+        ((error as any).response?.status === 404)
+      ) {
         return reply.status(404).send({ error: 'User or Game Mode not found.' });
       }
 
