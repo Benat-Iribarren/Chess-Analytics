@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { userSchema } from "../utils/schemas";
 
-const API_URL = 'https://lichess.org/api/user';
+const API_BASE_URL = 'https://lichess.org/api';
 const AXIOS_CONFIG = {
   headers: { 'Accept': 'application/json' }
 };
@@ -54,7 +54,7 @@ function getInputParameters(request: any) {
 }
 
 export async function getUserResponseData(id: string) {
-  const response = await axios.get(`${API_URL}/${id}`, AXIOS_CONFIG);
+  const response = await axios.get(`${API_BASE_URL}/user/${id}`, AXIOS_CONFIG);
   return response.data;
 }
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { top10Schema } from "../utils/schemas";
 import { LichessLeaderboardResponse } from "../utils/types";
 
-const API_URL = 'https://lichess.org/api/player';
+const API_BASE_URL = 'https://lichess.org/api';
 const AXIOS_CONFIG = {
   headers: { 'Accept': 'application/json' }
 };
@@ -31,7 +31,7 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
 }
 
 async function getLeaderboardResponseData() {
-  const response = await axios.get(API_URL, AXIOS_CONFIG);
+  const response = await axios.get(`${API_BASE_URL}/player`, AXIOS_CONFIG);
   return response.data;
 }
 

@@ -2,6 +2,18 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { topPlayerHistorySchema } from "../utils/schemas";
 
+const API_BASE_URL = 'https://lichess.org/api';
+const AXIOS_CONFIG = {
+  headers: { 'Accept': 'application/json' }
+};
+const ERRORS = {
+  INTERNAL_SERVER_ERROR: 'Internal server error.',
+  GAME_MODE_NOT_FOUND: 'Game Mode not found.',
+  USER_NOT_FOUND: 'User not found.',
+  INVALID_OR_MISSING_MODE_OR_TOP: 'Invalid or missing \'mode\' or \'top\' parameter.'
+};
+
+
 async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{ Querystring: { mode: string, top: string } }>('/chess/topPlayerHistory',
   {
@@ -13,14 +25,14 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
 
     const { mode, top } = getInputParameters(request);
     if (!areValidParameters(mode, top)) {
-      reply.status(400).send({ error: "Invalid or missing 'mode' or 'top' parameter." });
+      reply.status(400).send({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
       return;
     }
     try {
       const leaderboardInfoData = await getLeaderboardInfoResponseData(top, mode);
       const user = leaderboardInfoData.users[parseInt(top) - 1];
       if (!user) {
-        reply.status(404).send({ error: 'User not found.' });
+        reply.status(404).send({ error: ERRORS.USER_NOT_FOUND });
         return;
       }
       const username = user.username;
@@ -38,10 +50,10 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
         (axios.isAxiosError(error) && error.response?.status === 404) ||
         ((error as any).response?.status === 404)
       ) {
-        return reply.status(404).send({ error: 'Game Mode not found.' });
+        return reply.status(404).send({ error: ERRORS.GAME_MODE_NOT_FOUND });
       }
 
-      reply.status(500).send({ error: 'Internal server error.' });
+      reply.status(500).send({ error: ERRORS.INTERNAL_SERVER_ERROR });
     }
   });
 }
@@ -79,18 +91,12 @@ function getInputParameters(request: any) {
 }
 
 async function getLeaderboardInfoResponseData(top: string, mode: string) {
-  const API_URL = `https://lichess.org/api/player/top/${top}/${mode}`;
-  const response = await axios.get(API_URL, {
-    headers: { 'Accept': 'application/json' }
-  });
+  const response = await axios.get(`${API_BASE_URL}/player/top/${top}/${mode}`, AXIOS_CONFIG);
   return response.data;
 }
 
 async function getRatingHistoryResponseData(username: string) {
-  const API_URL = `https://lichess.org/api/user/${username}/rating-history`;
-  const response = await axios.get(API_URL, {
-    headers: { 'Accept': 'application/json' }
-  });
+  const response = await axios.get(`${API_BASE_URL}/user/${username}/rating-history`, AXIOS_CONFIG);
   return response.data;
 }
 

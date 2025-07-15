@@ -3,13 +3,14 @@ import axios from "axios";
 import { enrichedSchema } from "../utils/schemas";
 import { getUserResponseData } from "./user";
 
-const API_URL = 'https://lichess.org/api/user';
+const API_BASE_URL = 'https://lichess.org/api';
 const AXIOS_CONFIG = {
   headers: { 'Accept': 'application/json' }
 };
 const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
-  USER_OR_GAME_MODE_NOT_FOUND: 'User or Game Mode not found.'
+  USER_OR_GAME_MODE_NOT_FOUND: 'User or Game Mode not found.',
+  INVALID_OR_MISSING_ID_OR_MODE: 'Invalid or missing \'id\' or \'mode\' parameter.'
 };
 
 
@@ -23,7 +24,7 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
   async (request, reply) => {
     const { id, mode } = getInputParameters(request);
     if (!areValidParameters(id, mode)) {
-        reply.status(400).send({ error: "Invalid or missing 'id' or 'mode' parameter." });
+        reply.status(400).send({ error: ERRORS.INVALID_OR_MISSING_ID_OR_MODE });
         return;
     }
     try {
@@ -59,7 +60,7 @@ function getInputParameters(request: any) {
 }
 
 async function getUserPerformanceResponseData(username: string, mode: string) {
-  const response = await axios.get(`${API_URL}/${username}/perf/${mode}`, AXIOS_CONFIG);
+  const response = await axios.get(`${API_BASE_URL}/user/${username}/perf/${mode}`, AXIOS_CONFIG);
   return response.data;
 }
 
