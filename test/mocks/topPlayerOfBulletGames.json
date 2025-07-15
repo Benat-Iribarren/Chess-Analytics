@@ -1,0 +1,16 @@
+{
+    "users": [
+        {
+            "id": "ediz_gurel",
+            "username": "Ediz_Gurel",
+            "perfs": {
+                "bullet": {
+                    "rating": 3342,
+                    "progress": 20
+                }
+            },
+            "title": "GM",
+            "patron": true
+        }
+    ]
+}
