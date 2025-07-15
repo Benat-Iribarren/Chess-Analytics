@@ -45,7 +45,8 @@ function getInputParameters(request: any) {
 }
 
 export async function getUserResponseData(id: string) {
-  const response = await axios.get(`https://lichess.org/api/user/${id}`, {
+  const API_URL = `https://lichess.org/api/user/${id}`;
+  const response = await axios.get(API_URL, {
     headers: { 'Accept': 'application/json' }
   });
   return response.data;

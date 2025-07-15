@@ -75,14 +75,16 @@ function getInputParameters(request: any) {
 }
 
 async function getLeaderboardInfoResponseData(top: string, mode: string) {
-  const response = await axios.get(`https://lichess.org/api/player/top/${top}/${mode}`, {
+  const API_URL = `https://lichess.org/api/player/top/${top}/${mode}`;
+  const response = await axios.get(API_URL, {
     headers: { 'Accept': 'application/json' }
   });
   return response.data;
 }
 
 async function getRatingHistoryResponseData(username: string) {
-  const response = await axios.get(`https://lichess.org/api/user/${username}/rating-history`, {
+  const API_URL = `https://lichess.org/api/user/${username}/rating-history`;
+  const response = await axios.get(API_URL, {
     headers: { 'Accept': 'application/json' }
   });
   return response.data;

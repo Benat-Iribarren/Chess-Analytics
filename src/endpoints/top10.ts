@@ -23,7 +23,8 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
 }
 
 async function getLeaderboardResponseData() {
-  const response = await axios.get('https://lichess.org/api/player', {
+  const API_URL = 'https://lichess.org/api/player';
+  const response = await axios.get(API_URL, {
     headers: { 'Accept': 'application/json' }
   });
   return response.data;

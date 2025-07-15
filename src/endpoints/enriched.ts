@@ -49,7 +49,8 @@ function getInputParameters(request: any) {
 }
 
 async function getUserPerformanceResponseData(username: string, mode: string) {
-  const response = await axios.get(`https://lichess.org/api/user/${username}/perf/${mode}`, {
+  const API_URL = `https://lichess.org/api/user/${username}/perf/${mode}`;
+  const response = await axios.get(API_URL, {
     headers: { 'Accept': 'application/json' }
   });
   return response.data;
