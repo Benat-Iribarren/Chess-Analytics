@@ -19,6 +19,10 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
     try {
       const leaderboardInfoData = await getLeaderboardInfoResponseData(top, mode);
       const user = leaderboardInfoData.users[parseInt(top) - 1];
+      if (!user) {
+        reply.status(404).send({ error: 'User not found.' });
+        return;
+      }
       const username = user.username;
 
       const ratingHistoryData = await getRatingHistoryResponseData(username);

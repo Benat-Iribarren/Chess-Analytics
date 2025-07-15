@@ -122,10 +122,29 @@ describe('Top Player History integration tests', () => {
 
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/topPlayerHistory?mode=this_is_not_a_mode&top=1'
+      url: '/chess/topPlayerHistory',
+      query: {
+        mode: 'this_is_not_a_mode',
+        top: '1'
+      }
     });
 
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({ error: "Game Mode not found." });
+  });
+
+  it('Returns 404 if top player is not found', async () => {
+    const mockLeaderboardData = {
+      users: []
+    };
+    mockedAxios.get.mockResolvedValueOnce({ data: mockLeaderboardData });
+    
+    const response = await app.inject({
+      method: 'GET',
+      url: '/chess/topPlayerHistory?mode=bullet&top=1'
+    });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({ error: "User not found." }); 
   });
 });

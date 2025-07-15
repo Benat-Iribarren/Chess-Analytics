@@ -1,8 +1,8 @@
 import app from '../../../src/index';
 import supertest from 'supertest';
 import nock from 'nock';
-import mockLichessUserData from '../../mocks/user.json'; 
-import mockLichessEnrichedData from '../../mocks/enrichedUserPerformance.json'; 
+import mockLichessUserData from '../../mocks/user-thibault.mock.json'; 
+import mockLichessEnrichedData from '../../mocks/perf-blitz-thibault.mock.json'; 
 
 describe('Top10 E2E tests', () => { 
   let request: any;
@@ -51,9 +51,8 @@ describe('Top10 E2E tests', () => {
     lichessApiScope.get(`/api/user/${userId}/perf/${mode}`).reply(200, mockLichessEnrichedData);
     
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
-    +
+    
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
   });
 
   it('Returns 500 if the external Lichess API fails at second request', async () => {

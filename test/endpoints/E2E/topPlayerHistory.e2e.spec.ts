@@ -1,8 +1,8 @@
 import app from '../../../src/index';
 import supertest from 'supertest';
 import nock from 'nock';
-import mockTopPlayerOfBulletGames from '../../mocks/topPlayerOfBulletGames.json';
-import mockPlayerRatingHistory from '../../mocks/playerRatingHistory.json';
+import mockTopPlayerOfBulletGames from '../../mocks/top1-bullet.mock.json';
+import mockPlayerRatingHistory from '../../mocks/rating-history-edizgurel.mock.json';
 
 describe('Top10 E2E tests', () => { 
   let request: any;

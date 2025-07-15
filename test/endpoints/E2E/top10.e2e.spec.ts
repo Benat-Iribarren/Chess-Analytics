@@ -1,7 +1,7 @@
 import app from '../../../src/index';
 import supertest from 'supertest';
 import nock from 'nock';
-import mockLichessData from '../../mocks/top10.json'; 
+import mockLichessTop10Data from '../../mocks/top10.mock.json'; 
 
 describe('Top10 E2E tests', () => { 
   let request: any;
@@ -22,7 +22,7 @@ describe('Top10 E2E tests', () => {
   });
 
   it('should return 200 with a structured list of top players', async () => {
-    lichessApiScope.get('/api/player').reply(200, mockLichessData);
+    lichessApiScope.get('/api/player').reply(200, mockLichessTop10Data);
     const response = await request.get('/chess/top10');
 
     expect(response.statusCode).toBe(200);

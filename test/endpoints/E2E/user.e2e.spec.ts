@@ -1,7 +1,7 @@
 import app from '../../../src/index';
 import supertest from 'supertest';
 import nock from 'nock';
-import mockLichessUserData from '../../mocks/user.json';
+import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 
 describe('User E2E tests', () => { 
   let request: any;
