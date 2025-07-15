@@ -1,7 +1,15 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { top10Schema } from "../utils/schemas";
+import { LichessLeaderboardResponse } from "../utils/types";
 
+const API_URL = 'https://lichess.org/api/player';
+const AXIOS_CONFIG = {
+  headers: { 'Accept': 'application/json' }
+};
+const ERRORS = {
+  INTERNAL_SERVER_ERROR: 'Internal server error.'
+};
 async function top10Route(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get('/chess/top10',
   {
@@ -17,20 +25,17 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
       reply.status(200).send(top10DataRenamed);
     } catch (error) {
       fastify.log.error(error);
-      reply.status(500).send({ error: 'Internal server error.' });
+      reply.status(500).send({ error: ERRORS.INTERNAL_SERVER_ERROR });
     }
   });
 }
 
 async function getLeaderboardResponseData() {
-  const API_URL = 'https://lichess.org/api/player';
-  const response = await axios.get(API_URL, {
-    headers: { 'Accept': 'application/json' }
-  });
+  const response = await axios.get(API_URL, AXIOS_CONFIG);
   return response.data;
 }
 
-function renamePerfsNameToModes(data: any) {
+function renamePerfsNameToModes(data: LichessLeaderboardResponse) {
   const res: any = {};
   for (const mode in data) {
     if (Array.isArray(data[mode])) {

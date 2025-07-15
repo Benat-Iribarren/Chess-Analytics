@@ -2,6 +2,15 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { userSchema } from "../utils/schemas";
 
+const API_URL = 'https://lichess.org/api/user';
+const AXIOS_CONFIG = {
+  headers: { 'Accept': 'application/json' }
+};
+const ERRORS = {
+  INVALID_OR_MISSING_ID: 'Invalid or missing \'id\' parameter.',
+  INTERNAL_SERVER_ERROR: 'Internal server error.',
+  USER_NOT_FOUND: 'User not found.'
+};
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{ Querystring: { id: string } }>('/chess/user', 
   {
@@ -12,7 +21,7 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
   async (request, reply) => {
     const { id } = getInputParameters(request);
     if (!areValidParameters(id)) {
-      reply.status(400).send({ error: "Invalid or missing 'id' parameter." });
+      reply.status(400).send({ error: ERRORS.INVALID_OR_MISSING_ID });
       return;
     }
     try {
@@ -27,10 +36,10 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
         (axios.isAxiosError(error) && error.response?.status === 404) ||
         ((error as any).response?.status === 404)
       ) {
-        return reply.status(404).send({ error: 'User not found.' });
+        return reply.status(404).send({ error: ERRORS.USER_NOT_FOUND });
       }
 
-      reply.status(500).send({ error: 'Internal server error.' });
+      reply.status(500).send({ error: ERRORS.INTERNAL_SERVER_ERROR });
     }
   });
 }
@@ -45,10 +54,7 @@ function getInputParameters(request: any) {
 }
 
 export async function getUserResponseData(id: string) {
-  const API_URL = `https://lichess.org/api/user/${id}`;
-  const response = await axios.get(API_URL, {
-    headers: { 'Accept': 'application/json' }
-  });
+  const response = await axios.get(`${API_URL}/${id}`, AXIOS_CONFIG);
   return response.data;
 }
 

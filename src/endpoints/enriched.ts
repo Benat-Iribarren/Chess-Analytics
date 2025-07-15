@@ -3,6 +3,16 @@ import axios from "axios";
 import { enrichedSchema } from "../utils/schemas";
 import { getUserResponseData } from "./user";
 
+const API_URL = 'https://lichess.org/api/user';
+const AXIOS_CONFIG = {
+  headers: { 'Accept': 'application/json' }
+};
+const ERRORS = {
+  INTERNAL_SERVER_ERROR: 'Internal server error.',
+  USER_OR_GAME_MODE_NOT_FOUND: 'User or Game Mode not found.'
+};
+
+
 async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{ Querystring: { id: string, mode: string } }>('/chess/enriched',
   {
@@ -30,10 +40,10 @@ async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOpt
         (axios.isAxiosError(error) && error.response?.status === 404) ||
         ((error as any).response?.status === 404)
       ) {
-        return reply.status(404).send({ error: 'User or Game Mode not found.' });
+        return reply.status(404).send({ error: ERRORS.USER_OR_GAME_MODE_NOT_FOUND });
       }
 
-      reply.status(500).send({ error: 'Internal server error.' });
+      reply.status(500).send({ error: ERRORS.INTERNAL_SERVER_ERROR });
     }
   });
 }
@@ -49,10 +59,7 @@ function getInputParameters(request: any) {
 }
 
 async function getUserPerformanceResponseData(username: string, mode: string) {
-  const API_URL = `https://lichess.org/api/user/${username}/perf/${mode}`;
-  const response = await axios.get(API_URL, {
-    headers: { 'Accept': 'application/json' }
-  });
+  const response = await axios.get(`${API_URL}/${username}/perf/${mode}`, AXIOS_CONFIG);
   return response.data;
 }
 
