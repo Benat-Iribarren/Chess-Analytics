@@ -29,7 +29,7 @@ describe('Top10 E2E tests', () => {
     await app.close();
   });
 
-  it('should return 200 with a structured list of top players', async () => {
+  it('Should return 200 with a structured list of top players', async () => {
     const response = await request.get('/chess/top10');
 
     expect(response.statusCode).toBe(200);
@@ -54,7 +54,7 @@ describe('Top10 E2E tests', () => {
     expect(thirdBulletPlayer.title).toBe('FM');
   });
 
-  it('should return 500 if the external API fails', async () => {
+  it('Should return 500 if the external API fails', async () => {
     server.use(
       http.get('https://lichess.org/api/player', () => {
         return HttpResponse.error();

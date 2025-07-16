@@ -31,7 +31,7 @@ describe('User E2E tests', () => {
     await app.close();
   });
     
-  it('Returns 200 and complete user info for a valid user id', async () => {
+  it('Should return 200 and complete user info for a valid user id', async () => {
     const response = await request.get(`/chess/user?id=${userId}`);
     expect(response.statusCode).toBe(200);
 
@@ -61,7 +61,7 @@ describe('User E2E tests', () => {
 
   });
 
-  it('Returns 500 if the external Lichess API fails', async () => {
+  it('Should return 500 if the external Lichess API fails', async () => {
     server.use(
       http.get('https://lichess.org/api/user/thibault', () => {
         return HttpResponse.error();

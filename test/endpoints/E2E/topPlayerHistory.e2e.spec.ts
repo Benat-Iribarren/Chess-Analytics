@@ -15,7 +15,7 @@ const server = setupServer(
   })
 );
 
-describe('Top10 E2E tests', () => { 
+describe('Top Player History E2E tests', () => { 
   let app: FastifyInstance;
   let request: any;
     const mode = 'bullet';
@@ -35,7 +35,7 @@ describe('Top10 E2E tests', () => {
     await app.close();
   });
 
-  it('Returns 200 with the enriched data if the external API succeeds', async () => {
+  it('Should return 200 with the enriched data if the external API succeeds', async () => {
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     
     expect(response.statusCode).toBe(200);
@@ -49,7 +49,7 @@ describe('Top10 E2E tests', () => {
 
   });
 
-  it('Returns 500 if the external Lichess API fails at first request', async () => {
+  it('Should return 500 if the external Lichess API fails at first request', async () => {
     server.use(
       http.get('https://lichess.org/api/player/top/1/bullet', () => {
         return HttpResponse.error();
@@ -62,7 +62,7 @@ describe('Top10 E2E tests', () => {
     expect(response.body).toEqual({ error: 'Internal server error.' });
   });
 
-  it('Returns 500 if the external Lichess API fails at second request', async () => {
+  it('Should return 500 if the external Lichess API fails at second request', async () => {
     server.use(
       http.get('https://lichess.org/api/user/Ediz_Gurel/rating-history', () => {
         return HttpResponse.error();
