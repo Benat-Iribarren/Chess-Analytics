@@ -27,7 +27,7 @@ describe('User integration tests', () => {
     await app.close();
   });
 
-  it('Returns data with perfs renamed to modes if axios succeeds', async () => {
+  it('Should return the user data if the external API succeeds', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/user?id=thibault'
@@ -40,7 +40,7 @@ describe('User integration tests', () => {
     expect(body.modes.blitz.games).toBe(11470);
   });
 
-  it('Returns 400 if id is missing', async () => {
+  it('Should return 400 if id is missing', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/user'
@@ -49,7 +49,7 @@ describe('User integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'id' parameter." });
   });
 
-  it('Returns 404 if user is not found', async () => {
+  it('Should return 404 if user is not found', async () => {
     server.use(
       http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
         return new HttpResponse(null, { status: 404 });

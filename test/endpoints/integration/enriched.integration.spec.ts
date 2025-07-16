@@ -26,7 +26,7 @@ describe('Enriched integration tests', () => {
     await app.close();
   });
 
-  it('Returns enriched data if both axios calls succeed', async () => {
+  it('Should return the enriched data if the user and perf data are found', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/enriched?id=thibault&mode=blitz'
@@ -46,7 +46,7 @@ describe('Enriched integration tests', () => {
     expect(body.resultStreak.losses.max).toBe(19);
   });
 
-  it('Returns 400 if mode is missing', async () => {
+  it('Should return 400 if mode is missing', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/enriched?id=thibault'
@@ -55,7 +55,7 @@ describe('Enriched integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'id' or 'mode' parameter." });
   });
 
-  it('Returns 400 if id is missing', async () => {
+  it('Should return 400 if id is missing', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/enriched?mode=blitz'
@@ -64,7 +64,7 @@ describe('Enriched integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'id' or 'mode' parameter." });
   });
 
-  it('Returns 404 if user is not found', async () => {
+  it('Should return 404 if user is not found', async () => {
     server.use(
       http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
         return new HttpResponse(null, { status: 404 });
@@ -80,7 +80,7 @@ describe('Enriched integration tests', () => {
     expect(response.json()).toEqual({ error: "User or Game Mode not found." });
   });
 
-  it('Returns 404 if mode is not found', async () => {
+  it('Should return 404 if mode is not found', async () => {
     server.use(
       http.get('https://lichess.org/api/user/thibault/perf/this_is_not_a_mode', () => {
         return new HttpResponse(null, { status: 404 });

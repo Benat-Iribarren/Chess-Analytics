@@ -30,7 +30,7 @@ describe('Top Player History integration tests', () => {
     await app.close();
   });
 
-  it('Returns player history data if both axios calls succeed', async () => {
+  it('Should return the player history data if the external API succeeds', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?mode=bullet&top=1'
@@ -46,7 +46,7 @@ describe('Top Player History integration tests', () => {
     expect(body.history[0].rating).toBe(2846);
   });
 
-  it('Returns 400 if mode is missing', async () => {
+  it('Should return 400 if mode is missing', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?top=1'
@@ -54,7 +54,7 @@ describe('Top Player History integration tests', () => {
     expect(response.statusCode).toBe(400);
     expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
   });
-  it('Returns 400 if top is missing', async () => {
+  it('Should return 400 if top is missing', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?mode=bullet'
@@ -63,7 +63,7 @@ describe('Top Player History integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
   });
 
-  it('Returns 400 if top is not a number', async () => {
+  it('Should return 400 if top is not a number', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?mode=bullet&top=not_a_number'
@@ -72,7 +72,7 @@ describe('Top Player History integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
   });
 
-  it('Return 400 if top is greater than 200', async () => {
+  it('Should return 400 if top is greater than 200', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?mode=bullet&top=201'
@@ -81,7 +81,7 @@ describe('Top Player History integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
   });
 
-  it('Returns 400 if top is less than 1', async () => {
+  it('Should return 400 if top is less than 1', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/chess/topPlayerHistory?mode=bullet&top=0'
@@ -90,7 +90,7 @@ describe('Top Player History integration tests', () => {
     expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
   });
 
-  it('Returns 404 if mode is not found', async () => {
+  it('Should return 404 if mode is not found', async () => {
     server.use(
       http.get('https://lichess.org/api/player/top/1/this_is_not_a_mode', () => {
         return new HttpResponse(null, { status: 404 });
@@ -106,7 +106,7 @@ describe('Top Player History integration tests', () => {
     expect(response.json()).toEqual({ error: "Game Mode not found." });
   });
 
-  it('Returns 404 if top player is not found', async () => {
+  it('Should return 404 if top player is not found', async () => {
     server.use(
       http.get('https://lichess.org/api/player/top/1/bullet', () => {
         return HttpResponse.json({ users: [] });

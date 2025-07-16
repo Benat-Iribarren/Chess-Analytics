@@ -26,7 +26,7 @@ describe('Top10 integration tests', () => {
     await app.close();
   });
 
-  it('Returns data if axios succeeds', async () => {
+  it('Should return the top 10 players if the external API succeeds', async () => {
     const response = await app.inject({
         method: 'GET',
         url: '/chess/top10'
@@ -41,7 +41,7 @@ describe('Top10 integration tests', () => {
       expect(body.bullet[0]).toHaveProperty('modes'); 
     });
   
-    it('Returns 500 if axios fails', async () => {
+    it('Should return 500 if the external API fails', async () => {
       server.use(
         http.get('https://lichess.org/api/player', () => {
           return HttpResponse.error();
