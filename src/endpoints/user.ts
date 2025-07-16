@@ -1,11 +1,8 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { userSchema } from "../utils/schemas";
+import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const API_BASE_URL = 'https://lichess.org/api';
-const AXIOS_CONFIG = {
-  headers: { 'Accept': 'application/json' }
-};
 export const ERRORS = {
   INVALID_OR_MISSING_ID: 'Invalid or missing \'id\' parameter.',
   INTERNAL_SERVER_ERROR: 'Internal server error.',
@@ -55,7 +52,8 @@ function getInputParameters(request: any) {
 }
 
 export async function getUserResponseData(id: string) {
-  const response = await axios.get(`${API_BASE_URL}/user/${id}`, AXIOS_CONFIG);
+  const USER_URL = `${API_BASE_URL}/user/${id}`;
+  const response = await axios.get(USER_URL, AXIOS_CONFIG);
   return response.data;
 }
 

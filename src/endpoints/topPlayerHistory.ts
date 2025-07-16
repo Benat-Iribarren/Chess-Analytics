@@ -88,12 +88,14 @@ function getInputParameters(request: any) {
 }
 
 async function getLeaderboardInfoResponseData(top: string, mode: string) {
-  const response = await axios.get(`${API_BASE_URL}/player/top/${top}/${mode}`, AXIOS_CONFIG);
+  const LEADERBOARD_INFO_URL = `${API_BASE_URL}/player/top/${top}/${mode}`;
+  const response = await axios.get(LEADERBOARD_INFO_URL, AXIOS_CONFIG);
   return response.data;
 }
 
 async function getRatingHistoryResponseData(username: string) {
-  const response = await axios.get(`${API_BASE_URL}/user/${username}/rating-history`, AXIOS_CONFIG);
+  const RATING_HISTORY_URL = `${API_BASE_URL}/user/${username}/rating-history`;
+  const response = await axios.get(RATING_HISTORY_URL, AXIOS_CONFIG);
   return response.data;
 }
 

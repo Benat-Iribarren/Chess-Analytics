@@ -6,11 +6,16 @@ import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 import mockLichessPerfData from '../../mocks/perf-blitz-thibault.mock.json';
 import { ERRORS } from '../../../src/endpoints/enriched';
 
+const USER_ID = 'thibault';
+const MODE = 'blitz';
+const LICHESS_API_USER_URL = `https://lichess.org/api/user/${USER_ID}`;
+const LICHESS_API_PERF_URL = `https://lichess.org/api/user/${USER_ID}/perf/${MODE}`;
+
 const server = setupServer(
-  http.get('https://lichess.org/api/user/thibault', () => {
+  http.get(LICHESS_API_USER_URL, () => {
     return HttpResponse.json(mockLichessUserData);
   }),
-  http.get('https://lichess.org/api/user/thibault/perf/blitz', () => {
+  http.get(LICHESS_API_PERF_URL, () => {
     return HttpResponse.json(mockLichessPerfData);
   })
 );
@@ -23,21 +28,25 @@ describe('Enriched integration tests', () => {
     await app.ready();
   });
 
+  afterEach(() => server.resetHandlers());
+
   afterAll(async () => {
     await app.close();
   });
 
+  const API_ENRICHED_ENDPOINT = `/chess/enriched`;  
+
   it('Should return the enriched data if the user and perf data are found', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/enriched?id=thibault&mode=blitz'
+      url: `${API_ENRICHED_ENDPOINT}?id=${USER_ID}&mode=${MODE}`
     });
 
     expect(response.statusCode).toBe(200);
 
     const body = response.json();
-    expect(body.id).toBe('thibault');
-    expect(body.username).toBe('thibault');
+    expect(body.id).toBe(USER_ID);
+    expect(body.username).toBe(USER_ID);
     expect(body.profile.bio).toBe('I turn coffee into bugs.');
     expect(body.playTime.total).toBe(6408249);
     expect(body.rank).toBe(null);
@@ -50,7 +59,7 @@ describe('Enriched integration tests', () => {
   it('Should return 400 if mode is missing', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/enriched?id=thibault'
+      url: `${API_ENRICHED_ENDPOINT}?id=${USER_ID}`
     });
     expect(response.statusCode).toBe(400);
     expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID_OR_MODE });
@@ -59,7 +68,7 @@ describe('Enriched integration tests', () => {
   it('Should return 400 if id is missing', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/enriched?mode=blitz'
+      url: `${API_ENRICHED_ENDPOINT}?mode=${MODE}`
     });
     expect(response.statusCode).toBe(400);
     expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID_OR_MODE });
@@ -67,14 +76,14 @@ describe('Enriched integration tests', () => {
 
   it('Should return 404 if user is not found', async () => {
     server.use(
-      http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
+      http.get(LICHESS_API_USER_URL, () => {
         return new HttpResponse(null, { status: 404 });
       })
     );
 
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/enriched?id=this_is_not_a_user&mode=blitz'
+      url: `${API_ENRICHED_ENDPOINT}?id=${USER_ID}&mode=${MODE}`
     });
 
     expect(response.statusCode).toBe(404);
@@ -83,14 +92,14 @@ describe('Enriched integration tests', () => {
 
   it('Should return 404 if mode is not found', async () => {
     server.use(
-      http.get('https://lichess.org/api/user/thibault/perf/this_is_not_a_mode', () => {
+      http.get(LICHESS_API_PERF_URL, () => {
         return new HttpResponse(null, { status: 404 });
       })
     );
 
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/enriched?id=thibault&mode=this_is_not_a_mode'
+      url: `${API_ENRICHED_ENDPOINT}?id=${USER_ID}&mode=${MODE}`
     });
 
     expect(response.statusCode).toBe(404);

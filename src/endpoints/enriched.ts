@@ -57,7 +57,8 @@ function getInputParameters(request: any) {
 }
 
 async function getUserPerformanceResponseData(username: string, mode: string) {
-  const response = await axios.get(`${API_BASE_URL}/user/${username}/perf/${mode}`, AXIOS_CONFIG);
+  const USER_PERF_URL = `${API_BASE_URL}/user/${username}/perf/${mode}`;
+  const response = await axios.get(USER_PERF_URL, AXIOS_CONFIG);
   return response.data;
 }
 

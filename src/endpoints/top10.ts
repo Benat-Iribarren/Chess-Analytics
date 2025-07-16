@@ -28,7 +28,8 @@ async function top10Route(fastify: FastifyInstance, options: FastifyPluginOption
 }
 
 async function getLeaderboardResponseData() {
-  const response = await axios.get(`${API_BASE_URL}/player`, AXIOS_CONFIG);
+  const LEADERBOARD_URL = `${API_BASE_URL}/player`;
+  const response = await axios.get(LEADERBOARD_URL, AXIOS_CONFIG);
   return response.data;
 }
 

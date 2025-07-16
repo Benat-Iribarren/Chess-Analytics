@@ -1,4 +1,4 @@
-import supertest from 'supertest';
+
 import { build } from '../../../src/utils/build';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -6,21 +6,21 @@ import { FastifyInstance } from 'fastify';
 import mockLichessTop10Data from '../../mocks/top10.mock.json'; 
 import { ERRORS } from '../../../src/endpoints/top10';
 
+const LEADERBOARD_URL = 'https://lichess.org/api/player';
+
 const server = setupServer(
-  http.get('https://lichess.org/api/player', () => {
+  http.get(LEADERBOARD_URL, () => {
     return HttpResponse.json(mockLichessTop10Data);
   })
 );
 
 describe('Top10 E2E tests', () => { 
   let app: FastifyInstance;
-  let request: any;
 
   beforeAll(async () => {
     server.listen();
     app = build({ logger: false });
     await app.ready();
-    request = supertest(app.server as any);
   });
 
   afterEach(() => server.resetHandlers());
@@ -30,12 +30,16 @@ describe('Top10 E2E tests', () => {
     await app.close();
   });
 
-  it('Should return 200 with a structured list of top players', async () => {
-    const response = await request.get('/chess/top10');
+  const API_TOP10_ENDPOINT = '/chess/top10';
+  it('Should return 200 with a structured list of top players if the external API succeeds', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: API_TOP10_ENDPOINT,
+    });
 
     expect(response.statusCode).toBe(200);
     
-    const body = response.body;
+    const body = response.json();
     expect(body).toHaveProperty('bullet');
 
     const firstBulletPlayer = body.bullet[0];
@@ -55,16 +59,19 @@ describe('Top10 E2E tests', () => {
     expect(thirdBulletPlayer.title).toBe('FM');
   });
 
-  it('Should return 500 if the external API fails', async () => {
+  it('Should return 500 if the external API fails with an internal server error', async () => {
     server.use(
-      http.get('https://lichess.org/api/player', () => {
+      http.get(LEADERBOARD_URL, () => {
         return HttpResponse.error();
       })
     );
 
-    const response = await request.get('/chess/top10');
+    const response = await app.inject({
+      method: 'GET',
+      url: API_TOP10_ENDPOINT,
+    });
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
+    expect(response.json()).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 });

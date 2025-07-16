@@ -5,8 +5,11 @@ import { setupServer } from 'msw/node';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 import { ERRORS } from '../../../src/endpoints/user';
 
+const USER_ID = 'thibault';
+const USER_URL = `https://lichess.org/api/user/${USER_ID}`;
+
 const server = setupServer(
-  http.get('https://lichess.org/api/user/thibault', () => {
+  http.get(USER_URL, () => {
     return HttpResponse.json(mockLichessUserData);
   })
 );
@@ -28,10 +31,12 @@ describe('User integration tests', () => {
     await app.close();
   });
 
+  const USER_URL_ENDPOINT = '/chess/user';
+
   it('Should return the user data if the external API succeeds', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/user?id=thibault'
+      url: `${USER_URL_ENDPOINT}?id=${USER_ID}`
     });
 
     const body = response.json();
@@ -44,22 +49,23 @@ describe('User integration tests', () => {
   it('Should return 400 if id is missing', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/user'
+      url: USER_URL_ENDPOINT
     });
     expect(response.statusCode).toBe(400);
     expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID });
   });
 
   it('Should return 404 if user is not found', async () => {
+    const LICHESS_API_URL = `https://lichess.org/api/user/this_is_not_a_user`;
     server.use(
-      http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
+      http.get(LICHESS_API_URL, () => {
         return new HttpResponse(null, { status: 404 });
       })
     );
 
     const response = await app.inject({
       method: 'GET',
-      url: '/chess/user?id=this_is_not_a_user'
+      url: `${USER_URL_ENDPOINT}?id=this_is_not_a_user`
     });
 
     expect(response.statusCode).toBe(404);
