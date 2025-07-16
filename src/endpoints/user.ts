@@ -8,9 +8,10 @@ export const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   USER_NOT_FOUND: 'User not found.'
 };
+const BASE_ENDPOINT = '/chess/user';
 
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.get<{ Querystring: { id: string } }>('/chess/user', 
+  fastify.get<{ Querystring: { id: string } }>(BASE_ENDPOINT, 
   {
     schema: {
       response: userSchema
@@ -24,8 +25,7 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
     }
     try {
       const lichessResponseData = await getUserResponseData(id);
-      const { perfs, ...rest } = lichessResponseData;
-      const userDataRenamed = { ...rest, modes: perfs };
+      const userDataRenamed = renamePerfsToModes(lichessResponseData);
 
       reply.status(200).send(userDataRenamed);
     } catch (error) {
@@ -40,6 +40,11 @@ async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOption
       reply.status(500).send({ error: ERRORS.INTERNAL_SERVER_ERROR });
     }
   });
+}
+
+function renamePerfsToModes(data: any) {
+  const { perfs, ...rest } = data;
+  return { ...rest, modes: perfs };
 }
 
 function areValidParameters(id: string | undefined) {

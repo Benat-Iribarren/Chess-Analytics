@@ -10,9 +10,10 @@ export const ERRORS = {
   INVALID_OR_MISSING_MODE_OR_TOP: 'Invalid or missing \'mode\' or \'top\' parameter.'
 };
 
+const BASE_ENDPOINT = '/chess/topPlayerHistory';
 
 async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.get<{ Querystring: { mode: string, top: string } }>('/chess/topPlayerHistory',
+  fastify.get<{ Querystring: { mode: string, top: string } }>(BASE_ENDPOINT,
   {
     schema: {
       response: topPlayerHistorySchema
@@ -27,7 +28,8 @@ async function topPlayerHistoryRoute(fastify: FastifyInstance, options: FastifyP
     }
     try {
       const leaderboardInfoData = await getLeaderboardInfoResponseData(top, mode);
-      const user = leaderboardInfoData.users[parseInt(top) - 1];
+      const USER_INDEX = parseInt(top) - 1;
+      const user = leaderboardInfoData.users[USER_INDEX];
       if (!user) {
         reply.status(404).send({ error: ERRORS.USER_NOT_FOUND });
         return;

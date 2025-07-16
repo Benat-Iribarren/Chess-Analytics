@@ -7,8 +7,10 @@ import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 export const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.'
 };
+
+const BASE_ENDPOINT = '/chess/top10';
 async function top10Route(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.get('/chess/top10',
+  fastify.get(BASE_ENDPOINT,
   {
     schema: {
       response: top10Schema

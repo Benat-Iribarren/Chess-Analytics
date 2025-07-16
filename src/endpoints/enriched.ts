@@ -10,9 +10,9 @@ export const ERRORS = {
   INVALID_OR_MISSING_ID_OR_MODE: 'Invalid or missing \'id\' or \'mode\' parameter.'
 };
 
-
+const BASE_ENDPOINT = '/chess/enriched';
 async function enrichedRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  fastify.get<{ Querystring: { id: string, mode: string } }>('/chess/enriched',
+  fastify.get<{ Querystring: { id: string, mode: string } }>(BASE_ENDPOINT,
   {
     schema: {
       response: enrichedSchema
