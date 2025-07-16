@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import mockLichessTop10Data from '../../mocks/top10.mock.json';
+import { ERRORS } from '../../../src/endpoints/top10';
 
 const server = setupServer(
   http.get('https://lichess.org/api/player', () => {
@@ -39,6 +40,7 @@ describe('Top10 integration tests', () => {
       expect(body).toHaveProperty('blitz');
       expect(body.bullet[0].id).toBe('ediz_gurel');
       expect(body.bullet[0]).toHaveProperty('modes'); 
+      expect(body.bullet[0]).not.toHaveProperty('perfs');
     });
   
     it('Should return 500 if the external API fails', async () => {
@@ -54,6 +56,6 @@ describe('Top10 integration tests', () => {
       });
   
       expect(response.statusCode).toBe(500);
-      expect(response.json()).toEqual({ error: 'Internal server error.' });
+      expect(response.json()).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
     });
   });

@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 import mockLichessPerfData from '../../mocks/perf-blitz-thibault.mock.json';
+import { ERRORS } from '../../../src/endpoints/enriched';
 
 const server = setupServer(
   http.get('https://lichess.org/api/user/thibault', () => {
@@ -52,7 +53,7 @@ describe('Enriched integration tests', () => {
       url: '/chess/enriched?id=thibault'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'id' or 'mode' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID_OR_MODE });
   });
 
   it('Should return 400 if id is missing', async () => {
@@ -61,7 +62,7 @@ describe('Enriched integration tests', () => {
       url: '/chess/enriched?mode=blitz'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'id' or 'mode' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID_OR_MODE });
   });
 
   it('Should return 404 if user is not found', async () => {
@@ -77,7 +78,7 @@ describe('Enriched integration tests', () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.json()).toEqual({ error: "User or Game Mode not found." });
+    expect(response.json()).toEqual({ error: ERRORS.USER_OR_GAME_MODE_NOT_FOUND });
   });
 
   it('Should return 404 if mode is not found', async () => {
@@ -93,6 +94,6 @@ describe('Enriched integration tests', () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.json()).toEqual({ error: "User or Game Mode not found." });
+    expect(response.json()).toEqual({ error: ERRORS.USER_OR_GAME_MODE_NOT_FOUND });
   });
 });

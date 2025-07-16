@@ -5,6 +5,7 @@ import { FastifyInstance } from 'fastify';
 import supertest from 'supertest';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json'; 
 import mockLichessEnrichedData from '../../mocks/perf-blitz-thibault.mock.json'; 
+import { ERRORS } from '../../../src/endpoints/enriched';
 
 const server = setupServer(
   http.get('https://lichess.org/api/user/thibault', () => {
@@ -63,6 +64,7 @@ describe('Enriched E2E tests', () => {
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
     
     expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 
   it('Should return 500 if the external Lichess API fails at second request', async () => {
@@ -75,6 +77,6 @@ describe('Enriched E2E tests', () => {
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 });

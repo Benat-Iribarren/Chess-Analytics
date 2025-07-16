@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import mockTop1Bullet from '../../mocks/top1-bullet.mock.json';
 import mockEdizGurelHistory from '../../mocks/rating-history-edizgurel.mock.json';
+import { ERRORS } from '../../../src/endpoints/topPlayerHistory';
 
 const server = setupServer(
   http.get('https://lichess.org/api/player/top/1/bullet', () => {
@@ -52,7 +53,7 @@ describe('Top Player History integration tests', () => {
       url: '/chess/topPlayerHistory?top=1'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
   });
   it('Should return 400 if top is missing', async () => {
     const response = await app.inject({
@@ -60,7 +61,7 @@ describe('Top Player History integration tests', () => {
       url: '/chess/topPlayerHistory?mode=bullet'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
   });
 
   it('Should return 400 if top is not a number', async () => {
@@ -69,7 +70,7 @@ describe('Top Player History integration tests', () => {
       url: '/chess/topPlayerHistory?mode=bullet&top=not_a_number'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
   });
 
   it('Should return 400 if top is greater than 200', async () => {
@@ -78,7 +79,7 @@ describe('Top Player History integration tests', () => {
       url: '/chess/topPlayerHistory?mode=bullet&top=201'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
   });
 
   it('Should return 400 if top is less than 1', async () => {
@@ -87,7 +88,7 @@ describe('Top Player History integration tests', () => {
       url: '/chess/topPlayerHistory?mode=bullet&top=0'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'mode' or 'top' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_MODE_OR_TOP });
   });
 
   it('Should return 404 if mode is not found', async () => {
@@ -103,7 +104,7 @@ describe('Top Player History integration tests', () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.json()).toEqual({ error: "Game Mode not found." });
+    expect(response.json()).toEqual({ error: ERRORS.GAME_MODE_NOT_FOUND });
   });
 
   it('Should return 404 if top player is not found', async () => {
@@ -119,6 +120,6 @@ describe('Top Player History integration tests', () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.json()).toEqual({ error: "User not found." }); 
+    expect(response.json()).toEqual({ error: ERRORS.USER_NOT_FOUND }); 
   });
 });

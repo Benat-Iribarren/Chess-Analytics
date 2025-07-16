@@ -6,7 +6,7 @@ const API_BASE_URL = 'https://lichess.org/api';
 const AXIOS_CONFIG = {
   headers: { 'Accept': 'application/json' }
 };
-const ERRORS = {
+export const ERRORS = {
   INVALID_OR_MISSING_ID: 'Invalid or missing \'id\' parameter.',
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   USER_NOT_FOUND: 'User not found.'

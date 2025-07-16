@@ -4,7 +4,7 @@ import { enrichedSchema } from "../utils/schemas";
 import { getUserResponseData } from "./user";
 import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const ERRORS = {
+export const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   USER_OR_GAME_MODE_NOT_FOUND: 'User or Game Mode not found.',
   INVALID_OR_MISSING_ID_OR_MODE: 'Invalid or missing \'id\' or \'mode\' parameter.'

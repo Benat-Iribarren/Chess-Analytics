@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node';
 import { FastifyInstance } from 'fastify';
 import mockTopPlayerOfBulletGames from '../../mocks/top1-bullet.mock.json';
 import mockPlayerRatingHistory from '../../mocks/rating-history-edizgurel.mock.json';
+import { ERRORS } from '../../../src/endpoints/topPlayerHistory';
 
 const server = setupServer(
   http.get('https://lichess.org/api/player/top/1/bullet', () => {
@@ -59,7 +60,7 @@ describe('Top Player History E2E tests', () => {
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 
   it('Should return 500 if the external Lichess API fails at second request', async () => {
@@ -72,7 +73,7 @@ describe('Top Player History E2E tests', () => {
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
   
 });

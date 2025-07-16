@@ -3,7 +3,7 @@ import axios from "axios";
 import { topPlayerHistorySchema } from "../utils/schemas";
 import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const ERRORS = {
+export const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   GAME_MODE_NOT_FOUND: 'Game Mode not found.',
   USER_NOT_FOUND: 'User not found.',

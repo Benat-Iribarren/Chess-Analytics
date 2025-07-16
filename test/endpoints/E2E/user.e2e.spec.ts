@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { FastifyInstance } from 'fastify';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json';
+import { ERRORS } from '../../../src/endpoints/user';
 
 const server = setupServer(
   http.get('https://lichess.org/api/user/thibault', () => {
@@ -71,6 +72,6 @@ describe('User E2E tests', () => {
     const response = await request.get(`/chess/user?id=${userId}`);
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 });

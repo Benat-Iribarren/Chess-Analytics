@@ -4,7 +4,7 @@ import { top10Schema } from "../utils/schemas";
 import { LichessLeaderboardResponse } from "../utils/types";
 import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const ERRORS = {
+export const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.'
 };
 async function top10Route(fastify: FastifyInstance, options: FastifyPluginOptions) {

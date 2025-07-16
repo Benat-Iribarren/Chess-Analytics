@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { FastifyInstance } from 'fastify';
 import mockLichessTop10Data from '../../mocks/top10.mock.json'; 
+import { ERRORS } from '../../../src/endpoints/top10';
 
 const server = setupServer(
   http.get('https://lichess.org/api/player', () => {
@@ -64,6 +65,6 @@ describe('Top10 E2E tests', () => {
     const response = await request.get('/chess/top10');
     
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal server error.' });
+    expect(response.body).toEqual({ error: ERRORS.INTERNAL_SERVER_ERROR });
   });
 });

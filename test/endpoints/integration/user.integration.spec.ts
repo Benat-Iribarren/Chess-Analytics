@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json';
+import { ERRORS } from '../../../src/endpoints/user';
 
 const server = setupServer(
   http.get('https://lichess.org/api/user/thibault', () => {
@@ -46,7 +47,7 @@ describe('User integration tests', () => {
       url: '/chess/user'
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ error: "Invalid or missing 'id' parameter." });
+    expect(response.json()).toEqual({ error: ERRORS.INVALID_OR_MISSING_ID });
   });
 
   it('Should return 404 if user is not found', async () => {
@@ -62,7 +63,7 @@ describe('User integration tests', () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.json()).toEqual({ error: "User not found." });
+      expect(response.json()).toEqual({ error: ERRORS.USER_NOT_FOUND });
   });
 
 
