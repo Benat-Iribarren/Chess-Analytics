@@ -11,6 +11,7 @@ const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   USER_NOT_FOUND: 'User not found.'
 };
+
 async function usersRoute(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{ Querystring: { id: string } }>('/chess/user', 
   {

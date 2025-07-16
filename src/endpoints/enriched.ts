@@ -2,11 +2,8 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { enrichedSchema } from "../utils/schemas";
 import { getUserResponseData } from "./user";
+import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const API_BASE_URL = 'https://lichess.org/api';
-const AXIOS_CONFIG = {
-  headers: { 'Accept': 'application/json' }
-};
 const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.',
   USER_OR_GAME_MODE_NOT_FOUND: 'User or Game Mode not found.',

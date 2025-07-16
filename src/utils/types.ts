@@ -15,19 +15,3 @@ export interface LichessLeaderboardPlayer {
     [gameMode: string]: LichessLeaderboardPlayer[];
   }
   
-  export interface TransformedPlayer {
-    id: string;
-    username: string;
-    modes: {
-      [gameMode:string]: {
-        rating: number;
-        progress: number;
-      };
-    };
-    title?: string;
-    patron?: boolean;
-  }
-  
-  export interface Top10ApiResponse {
-    [gameMode: string]: TransformedPlayer[];
-  }

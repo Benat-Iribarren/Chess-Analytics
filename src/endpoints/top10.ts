@@ -2,11 +2,8 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import axios from "axios";
 import { top10Schema } from "../utils/schemas";
 import { LichessLeaderboardResponse } from "../utils/types";
+import { API_BASE_URL, AXIOS_CONFIG } from "../utils/constants";
 
-const API_BASE_URL = 'https://lichess.org/api';
-const AXIOS_CONFIG = {
-  headers: { 'Accept': 'application/json' }
-};
 const ERRORS = {
   INTERNAL_SERVER_ERROR: 'Internal server error.'
 };
