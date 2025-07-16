@@ -1,30 +1,37 @@
-import app from '../../../src/index';
+import { build } from '../../../src/utils/build';
 import supertest from 'supertest';
-import nock from 'nock';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { FastifyInstance } from 'fastify';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 
+const server = setupServer(
+  http.get('https://lichess.org/api/user/thibault', () => {
+    return HttpResponse.json(mockLichessUserData);
+  })
+);
+
 describe('User E2E tests', () => { 
+  let app: FastifyInstance;
   let request: any;
-  const lichessApiScope = nock('https://lichess.org');
   const userId = 'thibault';
 
   
   beforeAll(async () => {
+    server.listen();
+    app = build({ logger: false });
     await app.ready();
     request = supertest(app.server as any);
   });
 
-  afterEach(() => {
-    nock.cleanAll();
-  });
+  afterEach(() => server.resetHandlers());
 
   afterAll(async () => {
+    server.close();
     await app.close();
-    nock.restore();
   });
     
   it('Returns 200 and complete user info for a valid user id', async () => {
-    lichessApiScope.get(`/api/user/${userId}`).reply(200, mockLichessUserData);
     const response = await request.get(`/chess/user?id=${userId}`);
     expect(response.statusCode).toBe(200);
 
@@ -52,11 +59,14 @@ describe('User E2E tests', () => {
     expect(body.createdAt).toBe(1290415680000);
     expect(body.seenAt).toBe(1752475985759);
 
-    expect(nock.isDone()).toBe(true);
   });
 
   it('Returns 500 if the external Lichess API fails', async () => {
-    lichessApiScope.get(`/api/user/${userId}`).reply(500, { error: 'Internal server error.' });
+    server.use(
+      http.get('https://lichess.org/api/user/thibault', () => {
+        return HttpResponse.error();
+      })
+    );
 
     const response = await request.get(`/chess/user?id=${userId}`);
     

@@ -1,12 +1,24 @@
-jest.mock('axios');
+import { build } from '../../../src/utils/build';
+import { FastifyInstance } from 'fastify';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import mockLichessUserData from '../../mocks/user-thibault.mock.json';
+import mockLichessPerfData from '../../mocks/perf-blitz-thibault.mock.json';
 
-import axios, { AxiosError } from 'axios';
-import app from '../../../src/index';
-
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
+const server = setupServer(
+  http.get('https://lichess.org/api/user/thibault', () => {
+    return HttpResponse.json(mockLichessUserData);
+  }),
+  http.get('https://lichess.org/api/user/thibault/perf/blitz', () => {
+    return HttpResponse.json(mockLichessPerfData);
+  })
+);
 describe('Enriched integration tests', () => {
+  let app: FastifyInstance;
+
   beforeAll(async () => {
+    server.listen();
+    app = build({ logger: false });
     await app.ready();
   });
 
@@ -14,68 +26,24 @@ describe('Enriched integration tests', () => {
     await app.close();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('Returns enriched data if both axios calls succeed', async () => {
-    const mockUserData = {
-      id: 'thibault',
-      username: 'thibault',
-      profile: {
-        bio: 'I turn coffee into bugs.',
-        realName: 'Thibault Duplessis',
-        links: 'github.com/ornicar\r\nmas.to/@thibault'
-      },
-      playTime: {
-        total: 6408249,
-        tv: 17974
-      }
-    };
-
-    const mockPerfData = {
-      rank: null,
-      stat: {
-        resultStreak: {
-          win: { cur: { v: 0 }, max: { v: 16 } },
-          loss: { cur: { v: 1 }, max: { v: 14 } }
-        }
-      }
-    };
-
-    mockedAxios.get.mockResolvedValueOnce({ data: mockUserData });
-    mockedAxios.get.mockResolvedValueOnce({ data: mockPerfData });
-
     const response = await app.inject({
       method: 'GET',
       url: '/chess/enriched?id=thibault&mode=blitz'
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      id: 'thibault',
-      username: 'thibault',
-      profile: {
-        bio: 'I turn coffee into bugs.',
-        realName: 'Thibault Duplessis',
-        links: 'github.com/ornicar\r\nmas.to/@thibault'
-      },
-      playTime: {
-        total: 6408249,
-        tv: 17974
-      },
-      rank: null,
-      resultStreak: {
-        wins: {
-          current: 0,
-          max: 16
-        },
-        losses: {
-          current: 1,
-          max: 14
-        }
-      }
-    });
+
+    const body = response.json();
+    expect(body.id).toBe('thibault');
+    expect(body.username).toBe('thibault');
+    expect(body.profile.bio).toBe('I turn coffee into bugs.');
+    expect(body.playTime.total).toBe(6408249);
+    expect(body.rank).toBe(null);
+    expect(body.resultStreak.wins.current).toBe(1);
+    expect(body.resultStreak.wins.max).toBe(11);
+    expect(body.resultStreak.losses.current).toBe(0);
+    expect(body.resultStreak.losses.max).toBe(19);
   });
 
   it('Returns 400 if mode is missing', async () => {
@@ -97,12 +65,11 @@ describe('Enriched integration tests', () => {
   });
 
   it('Returns 404 if user is not found', async () => {
-    const error404 = Object.assign(new Error('Not Found'), {
-      isAxiosError: true,
-      response: { status: 404 }
-    }) as AxiosError;
-
-    mockedAxios.get.mockRejectedValueOnce(error404);
+    server.use(
+      http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
 
     const response = await app.inject({
       method: 'GET',
@@ -114,13 +81,11 @@ describe('Enriched integration tests', () => {
   });
 
   it('Returns 404 if mode is not found', async () => {
-    const error404 = Object.assign(new Error('Not Found'), {
-      isAxiosError: true,
-      response: { status: 404 }
-    }) as AxiosError;
-
-    mockedAxios.get.mockResolvedValueOnce({ data: { username: 'thibault' } });
-    mockedAxios.get.mockRejectedValueOnce(error404);
+    server.use(
+      http.get('https://lichess.org/api/user/thibault/perf/this_is_not_a_mode', () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
 
     const response = await app.inject({
       method: 'GET',

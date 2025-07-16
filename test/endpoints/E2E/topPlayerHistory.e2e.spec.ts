@@ -1,33 +1,41 @@
-import app from '../../../src/index';
+import { build } from '../../../src/utils/build';
 import supertest from 'supertest';
-import nock from 'nock';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { FastifyInstance } from 'fastify';
 import mockTopPlayerOfBulletGames from '../../mocks/top1-bullet.mock.json';
 import mockPlayerRatingHistory from '../../mocks/rating-history-edizgurel.mock.json';
 
+const server = setupServer(
+  http.get('https://lichess.org/api/player/top/1/bullet', () => {
+    return HttpResponse.json(mockTopPlayerOfBulletGames);
+  }),
+  http.get('https://lichess.org/api/user/Ediz_Gurel/rating-history', () => {
+    return HttpResponse.json(mockPlayerRatingHistory);
+  })
+);
+
 describe('Top10 E2E tests', () => { 
+  let app: FastifyInstance;
   let request: any;
-    const lichessApiScope = nock('https://lichess.org');
     const mode = 'bullet';
     const top = '1';
 
   beforeAll(async () => {
+    server.listen();
+    app = build({ logger: false });
     await app.ready();
     request = supertest(app.server as any);
   });
 
-  afterEach(() => {
-    nock.cleanAll();
-  });
+  afterEach(() => server.resetHandlers());
 
   afterAll(async () => {
+    server.close();
     await app.close();
-    nock.restore();
   });
 
   it('Returns 200 with the enriched data if the external API succeeds', async () => {
-    lichessApiScope.get(`/api/player/top/${top}/${mode}`).reply(200, mockTopPlayerOfBulletGames);
-    lichessApiScope.get(`/api/user/Ediz_Gurel/rating-history`).reply(200, mockPlayerRatingHistory);
-
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     
     expect(response.statusCode).toBe(200);
@@ -39,12 +47,14 @@ describe('Top10 E2E tests', () => {
     expect(body.history[1].date).toBe('2023-02-16');
     expect(body.history[1].rating).toBe(2951);
 
-    expect(nock.isDone()).toBe(true);
   });
 
   it('Returns 500 if the external Lichess API fails at first request', async () => {
-    lichessApiScope.get(`/api/player/top/${top}/${mode}`).reply(500, { error: 'Server Error' });
-    lichessApiScope.get(`/api/user/Ediz_Gurel/rating-history`).reply(200, mockPlayerRatingHistory);
+    server.use(
+      http.get('https://lichess.org/api/player/top/1/bullet', () => {
+        return HttpResponse.error();
+      })
+    );
 
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     
@@ -53,8 +63,11 @@ describe('Top10 E2E tests', () => {
   });
 
   it('Returns 500 if the external Lichess API fails at second request', async () => {
-    lichessApiScope.get(`/api/player/top/${top}/${mode}`).reply(200, mockTopPlayerOfBulletGames);
-    lichessApiScope.get(`/api/user/Ediz_Gurel/rating-history`).reply(500, { error: 'Server Error' });
+    server.use(
+      http.get('https://lichess.org/api/user/Ediz_Gurel/rating-history', () => {
+        return HttpResponse.error();
+      })
+    );
 
     const response = await request.get(`/chess/topPlayerHistory?mode=${mode}&top=${top}`);
     

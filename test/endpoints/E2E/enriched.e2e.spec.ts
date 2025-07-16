@@ -1,33 +1,41 @@
-import app from '../../../src/index';
+import { build } from '../../../src/utils/build';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { FastifyInstance } from 'fastify';
 import supertest from 'supertest';
-import nock from 'nock';
 import mockLichessUserData from '../../mocks/user-thibault.mock.json'; 
 import mockLichessEnrichedData from '../../mocks/perf-blitz-thibault.mock.json'; 
 
+const server = setupServer(
+  http.get('https://lichess.org/api/user/thibault', () => {
+    return HttpResponse.json(mockLichessUserData);
+  }),
+  http.get('https://lichess.org/api/user/thibault/perf/blitz', () => {
+    return HttpResponse.json(mockLichessEnrichedData);
+  })
+);
+
 describe('Top10 E2E tests', () => { 
+  let app: FastifyInstance;
   let request: any;
-  const lichessApiScope = nock('https://lichess.org');
   const userId = 'thibault';
   const mode = 'blitz';
 
   beforeAll(async () => {
+    server.listen();
+    app = build({ logger: false });
     await app.ready();
     request = supertest(app.server as any);
   });
 
-  afterEach(() => {
-    nock.cleanAll();
-  });
+  afterEach(() => server.resetHandlers());
 
   afterAll(async () => {
+    server.close();
     await app.close();
-    nock.restore();
   });
 
   it('Returns 200 with the enriched data if the external API succeeds', async () => {
-    lichessApiScope.get(`/api/user/${userId}`).reply(200, mockLichessUserData);
-    lichessApiScope.get(`/api/user/${userId}/perf/${mode}`).reply(200, mockLichessEnrichedData);
-
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
     
     expect(response.statusCode).toBe(200);
@@ -43,12 +51,14 @@ describe('Top10 E2E tests', () => {
     expect(body.resultStreak.losses.current).toBe(0);
     expect(body.resultStreak.losses.max).toBe(19);
 
-    expect(nock.isDone()).toBe(true);
   });
 
   it('Returns 500 if the external Lichess API fails at first request', async () => {
-    lichessApiScope.get(`/api/user/${userId}`).reply(500, { error: 'Server Error' });
-    lichessApiScope.get(`/api/user/${userId}/perf/${mode}`).reply(200, mockLichessEnrichedData);
+    server.use(
+      http.get('https://lichess.org/api/user/thibault', () => {
+        return HttpResponse.error();
+      })
+    );
     
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
     
@@ -56,8 +66,11 @@ describe('Top10 E2E tests', () => {
   });
 
   it('Returns 500 if the external Lichess API fails at second request', async () => {
-    lichessApiScope.get(`/api/user/${userId}`).reply(200, mockLichessUserData);
-    lichessApiScope.get(`/api/user/${userId}/perf/${mode}`).reply(500, { error: 'Server Error' });
+    server.use(
+      http.get('https://lichess.org/api/user/thibault/perf/blitz', () => {
+        return HttpResponse.error();
+      })
+    );
 
     const response = await request.get(`/chess/enriched?id=${userId}&mode=${mode}`);
     

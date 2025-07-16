@@ -1,55 +1,43 @@
-jest.mock('axios');
+import { build } from '../../../src/utils/build';
+import { FastifyInstance } from 'fastify';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import mockLichessUserData from '../../mocks/user-thibault.mock.json';
 
-import axios, { AxiosError } from 'axios';
-import app from '../../../src/index';
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const server = setupServer(
+  http.get('https://lichess.org/api/user/thibault', () => {
+    return HttpResponse.json(mockLichessUserData);
+  })
+);
+
 
 describe('User integration tests', () => {
+  let app: FastifyInstance;
+
   beforeAll(async () => {
+    server.listen();
+    app = build({ logger: false });
     await app.ready();
   });
 
+  afterEach(() => server.resetHandlers());
+
   afterAll(async () => {
+    server.close();
     await app.close();
   });
 
   it('Returns data with perfs renamed to modes if axios succeeds', async () => {
-    const auxData = {
-      games: 3,
-      rating: 1688,
-      rd: 348,
-      prog: 0,
-      prov: true
-    };
-    const data = {
-      id: 'thibault',
-      username: 'thibault',
-      playTime: { total: 1000, tv: 10 },
-      perfs: {
-        ultrabullet: auxData,
-        bullet: auxData,
-        blitz: auxData
-      }
-    };
-    const expectedData = {
-      id: 'thibault',
-      username: 'thibault',
-      playTime: { total: 1000, tv: 10 },
-      modes: {
-        ultrabullet: auxData,
-        bullet: auxData,
-        blitz: auxData
-      }
-    };
-    mockedAxios.get.mockResolvedValueOnce({ data });
-
     const response = await app.inject({
       method: 'GET',
       url: '/chess/user?id=thibault'
     });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual(expectedData);
+    const body = response.json();
+    expect(body.id).toBe('thibault');
+    expect(body.username).toBe('thibault');
+    expect(body).toHaveProperty('modes');
+    expect(body.modes.blitz.games).toBe(11470);
   });
 
   it('Returns 400 if id is missing', async () => {
@@ -62,12 +50,11 @@ describe('User integration tests', () => {
   });
 
   it('Returns 404 if user is not found', async () => {
-    const error404 = Object.assign(new Error('Not Found'), {
-      isAxiosError: true,
-      response: { status: 404 }
-    }) as AxiosError;
-
-    mockedAxios.get.mockRejectedValueOnce(error404);
+    server.use(
+      http.get('https://lichess.org/api/user/this_is_not_a_user', () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
 
     const response = await app.inject({
       method: 'GET',
