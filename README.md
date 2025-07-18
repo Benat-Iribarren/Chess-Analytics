@@ -1,6 +1,5 @@
 # Chess-Analytics
 
-https://lichess.org/api#tag/Users/operation/apiUsers
 
 # Endpoints
 
